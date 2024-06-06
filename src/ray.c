@@ -29,6 +29,5 @@ void destroy_ray(ray_s *ray) {
     destroy_vector3d(ray->direction);
 
     free(ray);
-
     ray = NULL;
 }

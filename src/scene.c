@@ -30,11 +30,13 @@ void add_object3d_to_scene(scene_object3d_s *scene_first_object3d, object3d_s *n
 }
 
 void destroy_scene(scene_object3d_s *scene_first_object3d) {
-    scene_object3d_s *current_scene_object3d = scene_first_object3d;
-    scene_object3d_s *next_scene_object3d = NULL;
+    scene_object3d_s
+        *current_scene_object3d = scene_first_object3d,
+        *next_scene_object3d = NULL;
 
     while (current_scene_object3d != NULL) {
         scene_object3d_s *trash = current_scene_object3d;
+        
         next_scene_object3d = current_scene_object3d->next;
 
         destroy_scene_object3d(trash);

@@ -26,9 +26,7 @@ bool ray_intersects_with_object3d(ray_s *ray, object3d_s *object3d) {
 
         discriminant = pow(b, 2) - 4 * a * c;
 
-        if (discriminant < 0) {
-            return false;
-        }
+        if (discriminant < 0) return false;
     } else {
         exit(INVALID_OBJECT3D_TYPE_ERROR);
     }

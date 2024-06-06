@@ -5,23 +5,24 @@
 int main(void) {
     FILE *output_img = fopen("../img.ppm", "w");
 
-    int img_width = 512;
-    int img_height = 512;
+    int
+        img_width = 512,
+        img_height = 512;
+
+    float
+        aspect_ratio = img_width / img_height,
+        scale = 1,
+        normal_cartesian_coord_x,
+        normal_cartesian_coord_y;
 
     color_s *background_color = create_color(255, 255, 255);
-
-    float aspect_ratio = img_width / img_height;
-    float scale = 1;
-
-    float normal_cartesian_coord_x;
-    float normal_cartesian_coord_y;
 
     vector3d_s *camera_position = create_vector3d(0, 0, 0);
     ray_s *primary_ray;
 
-    scene_object3d_s *scene = create_scene_object3d(NULL);
-
-    scene_object3d_s *scene_current_object3d;
+    scene_object3d_s
+        *scene = create_scene_object3d(NULL),
+        *scene_current_object3d;
 
     add_object3d_to_scene(
         scene,
@@ -39,8 +40,8 @@ int main(void) {
 
     for (int y = img_height - 1; y >= 0; y--) {
         for (int x = img_width - 1; x >= 0; x--) {
-            normal_cartesian_coord_x = (x - img_width / 2.0) * scale / img_width * aspect_ratio;
-            normal_cartesian_coord_y = (img_height / 2.0 - y) * scale / img_height;
+            normal_cartesian_coord_x = (x - img_width / 2) * scale / img_width * aspect_ratio;
+            normal_cartesian_coord_y = (img_height / 2 - y) * scale / img_height;
 
             primary_ray = trace_ray(
                 create_vector3d(camera_position->x, camera_position->y, camera_position->z),
