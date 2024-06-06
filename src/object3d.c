@@ -54,6 +54,8 @@ void destroy_object3d(object3d_s *object3d) {
         exit(INVALID_OBJECT3D_TYPE_ERROR);
     }
 
+    destroy_color(object3d->color);
+
     free(object3d);
     object3d = NULL;
 }
