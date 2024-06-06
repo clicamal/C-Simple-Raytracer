@@ -1,0 +1,6 @@
+#include "c-simple-raytracer/color.h"
+#include "c-simple-raytracer/vector3d.h"
+#include "c-simple-raytracer/ray.h"
+#include "c-simple-raytracer/object3d.h"
+#include "c-simple-raytracer/scene.h"
+#include "c-simple-raytracer/math.h"
