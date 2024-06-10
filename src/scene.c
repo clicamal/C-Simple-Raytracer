@@ -3,7 +3,7 @@
 scene_object3d_s *create_scene_object3d(object3d_s *current) {
     scene_object3d_s *scene_object3d = malloc(sizeof(scene_object3d_s));
 
-    if (scene_object3d == NULL) return scene_object3d;
+    if (scene_object3d == NULL) exit(ALLOCATION_ERROR);
 
     scene_object3d->current = current;
     scene_object3d->next = NULL;

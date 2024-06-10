@@ -17,7 +17,11 @@ int main(void) {
 
     color_s *background_color = create_color(255, 255, 255);
 
-    vector3d_s *camera_position = create_vector3d(0, 0, 0);
+    vector3d_s
+        *camera_position = create_vector3d(0, 0, 0),
+        *light_source = create_vector3d(5, 5, 5),
+        *primary_intersection_point;
+
     ray_s *primary_ray;
 
     scene_object3d_s
@@ -38,9 +42,9 @@ int main(void) {
 
     fprintf(output_img, "P3 %d %d %d", img_width, img_height, 255);
 
-    for (int y = img_height - 1; y >= 0; y--) {
-        for (int x = img_width - 1; x >= 0; x--) {
-            normal_cartesian_coord_x = (x - img_width / 2) * scale / img_width * aspect_ratio;
+    for (int y = 0; y < img_height; y++) {
+        for (int x = 0; x < img_width; x++) {
+            normal_cartesian_coord_x = (-img_width / 2 + x) * scale / img_width * aspect_ratio;
             normal_cartesian_coord_y = (img_height / 2 - y) * scale / img_height;
 
             primary_ray = trace_ray(
@@ -51,15 +55,62 @@ int main(void) {
             scene_current_object3d = scene;
 
             while (scene_current_object3d != NULL) {
-                if (ray_intersects_with_object3d(primary_ray, scene_current_object3d->current)) break;
+                primary_intersection_point = calculate_ray_intersection_with_object3d(primary_ray, scene_current_object3d->current);
+
+                if (primary_intersection_point != NULL) break;
 
                 scene_current_object3d = scene_current_object3d->next;
             }
-
+            
             destroy_ray(primary_ray);
 
-            if (scene_current_object3d == NULL) fprintf(output_img, " %d %d %d", background_color->r, background_color->g, background_color->b);
-            else fprintf(output_img, " %d %d %d", scene_current_object3d->current->color->r, scene_current_object3d->current->color->g, scene_current_object3d->current->color->b);
+            if (scene_current_object3d == NULL) {
+                fprintf(output_img, " %d %d %d", background_color->r, background_color->g, background_color->b);
+            } else {
+                ray_s *shadow_ray = trace_ray(
+                    create_vector3d(
+                        primary_intersection_point->x,
+                        primary_intersection_point->y,
+                        primary_intersection_point->z
+                    ),
+                    subtract_vector3ds(
+                        light_source,
+                        primary_intersection_point
+                    )
+                );
+
+                scene_object3d_s *scene_current_shadow_object3d = scene;
+
+                vector3d_s *shadow_intersection_point;
+
+                while (scene_current_shadow_object3d != NULL) {
+                    shadow_intersection_point = calculate_ray_intersection_with_object3d(shadow_ray, scene_current_shadow_object3d->current);
+
+                    if (shadow_intersection_point != NULL) break;
+
+                    scene_current_shadow_object3d = scene_current_shadow_object3d->next;
+                }
+
+                destroy_ray(shadow_ray);
+
+                vector3d_s *primary_intersection_point_and_light_source_distance = subtract_vector3ds(light_source, primary_intersection_point);
+                vector3d_s *shadow_intersection_point_and_light_source_distance = NULL;
+
+                if (shadow_intersection_point != NULL) shadow_intersection_point_and_light_source_distance = subtract_vector3ds(light_source, shadow_intersection_point);
+
+                if (scene_current_shadow_object3d != NULL && compare_vector3ds(primary_intersection_point_and_light_source_distance, shadow_intersection_point_and_light_source_distance) > 0) {
+                    fprintf(output_img, " 0 0 0");
+                }
+
+                else {
+                    fprintf(output_img, " %d %d %d", scene_current_object3d->current->color->r, scene_current_object3d->current->color->g, scene_current_object3d->current->color->b);
+                }
+
+                if (shadow_intersection_point_and_light_source_distance != NULL) destroy_vector3d(shadow_intersection_point_and_light_source_distance);
+                destroy_vector3d(primary_intersection_point_and_light_source_distance);
+                destroy_vector3d(primary_intersection_point);
+                destroy_vector3d(shadow_intersection_point);
+            }
         }
     }
 

@@ -22,7 +22,7 @@ object3d_s *create_object3d(object3d_type_e type, color_s *color, ...) {
     object3d_s *object3d = malloc(sizeof(object3d_s));
     va_list args;
 
-    if (object3d == NULL) return object3d;
+    if (object3d == NULL) exit(ALLOCATION_ERROR);
 
     va_start(args, color);
 
